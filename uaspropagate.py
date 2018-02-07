@@ -389,9 +389,9 @@ VALUES (unhex(%s), %s, %s, %s, %s)'''
         else:
             logging.getLogger().debug("uas_sessions_rs is None!")
 
-def update_person(uas_id, title, given_name, family_name, id):
-    query = 'UPDATE Person SET externalId=unhex(%s), title=%s, givenName=%s, familyName=%s WHERE personId=%s'
-    params = [uas_id, title, given_name, family_name, str(id)]
+def update_person(uas_id, login, title, given_name, family_name, id):
+    query = 'UPDATE Person SET externalId=unhex(%s), login=%s, title=%s, givenName=%s, familyName=%s WHERE personId=%s'
+    params = [uas_id, login, title, given_name, family_name, str(id)]
     do_ispyb_query(query, params, False, False)
 
 def retrieve_person_id(uas_person_id):
@@ -775,8 +775,8 @@ WHERE login is not NULL"""
         for ispyb_row in ispyb_rs:
             if (uas_row[0] == ispyb_row[0]) or (uas_row[1] == ispyb_row[1]): # UAS GUID, ISPyB externalId 
 
-                if uas_row[0] != ispyb_row[0] or uas_row[2] != ispyb_row[2] or uas_row[3] != ispyb_row[3] or uas_row[4] != ispyb_row[4]: 
-                    update_person(uas_row[0], uas_row[2], uas_row[3], uas_row[4], ispyb_row[5])
+                if uas_row[0] != ispyb_row[0] or uas_row[1] != ispyb_row[1] or uas_row[2] != ispyb_row[2] or uas_row[3] != ispyb_row[3] or uas_row[4] != ispyb_row[4]: 
+                    update_person(uas_row[0], uas_row[1], uas_row[2], uas_row[3], uas_row[4], ispyb_row[5])
                 break
         else:
             insert_person(uas_row[0], uas_row[1], uas_row[2], uas_row[3], uas_row[4])    
