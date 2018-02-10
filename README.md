@@ -1,8 +1,8 @@
-# ispyb-propagation
+# ispyb-datasync
 
-These scripts are used for propagating certain kinds of metadata 
+These scripts are used for synching certain kinds of metadata
 from our user database and LDAP into the ISPyB database. Currently,
-the propagated metadata is:
+the synched metadata is:
 * proposals
 * sessions
 * persons
@@ -11,7 +11,7 @@ the propagated metadata is:
 
 ### Requirements
 * Python 2.7
-* The MySQLdb Python package
+* The mysql.connector Python package
 * The cx_Oracle Python package (for reading the user database)  
 * An ISPyB database on either MariaDB 10.0+ or MySQL 5.6+
 * A Diamond user database

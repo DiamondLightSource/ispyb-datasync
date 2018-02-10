@@ -151,10 +151,15 @@ class Replicator:
         output = subprocess.check_output("""ldapsearch -x -LLL -s sub -b uid=%s,ou=People,dc=diamond,dc=ac,dc=uk "(&(objectClass=person))" sn givenName""" % uid, stderr=subprocess.STDOUT, shell=True)
         if output is not None and output != '':
             lines = output.split('\n')
-            lines.pop() # remove last item which is empty
-            sn = lines[1]
-            given_name = lines[2]
-            return (sn[4:], given_name[11:])
+            sn = None
+            given_name = None
+            sn_l = [i for i in lines if i.startswith('sn:')]
+            if len(sn_l) == 1:
+                sn = sn_l[0][4:]
+            given_name_l = [i for i in lines if i.startswith('givenName:')]
+            if len(given_name_l) == 1:
+                given_name = given_name_l[0][11:]
+            return (sn, given_name)
 
     def ldapsearch_group(self, group_names):
         people_set = set()
@@ -227,6 +232,8 @@ class Replicator:
             for row in db_group_members:
                 db_logins_set.add(row[0])
                 (ldap_family_name, ldap_given_name) = self.ldapsearch_person(row[0])
+                if ldap_family_name != row[1] or ldap_given_name != row[2]:
+                    self.update_person(row[0], ldap_family_name, ldap_given_name, cursor)
             
             # The set of ldap_group_members after removing elements found in db_group_members:
             members_2_insert = ldap_group_members.difference(db_logins_set) 
@@ -236,7 +243,7 @@ class Replicator:
             members_2_delete = db_logins_set.difference(ldap_group_members) 
             logging.getLogger().debug("members_2_delete")
             logging.getLogger().debug(members_2_delete)
-
+            
             if members_2_insert is not None:
                 for member in members_2_insert:
                     self.insert_usergroup_has_person(ugid, member, cursor)
