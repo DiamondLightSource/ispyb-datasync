@@ -133,7 +133,7 @@ class UASConnector(DBSource):
             logging.getLogger().debug("%s: id took %f seconds" % (sys.argv[0], (time.time()-start_time)))
     return ret
 
-  def retrieve_uas_person_row(self, uas_person_id):
+  def retrieve_person_row(self, uas_person_id):
     query = """SELECT lower(federal_id), title, given_name, family_name
 FROM facility_user
 WHERE person_id=hextoraw('%s')""" % uas_person_id
@@ -142,15 +142,15 @@ WHERE person_id=hextoraw('%s')""" % uas_person_id
         return rs[0]
     return None
 
-  def retrieve_uas_persons_for_session(self, uas_id):
-    query = """SELECT person_id, "role", on_site
+  def retrieve_persons_for_session(self, uas_id):
+    query = """SELECT person_id, role, on_site, federal_id, title, given_name, family_name
 FROM (
-SELECT rawtohex(lc.person_id) person_id, decode(lc.local_contact_level,0,'LOCAL_CONTACT_1ST',1,'LOCAL_CONTACT_2ND','LOCAL_CONTACT') "role", 1 on_site, 1 rank
+SELECT rawtohex(lc.person_id) person_id, decode(lc.local_contact_level,0,'LOCAL_CONTACT_1ST',1,'LOCAL_CONTACT_2ND','LOCAL_CONTACT') "role", 1 on_site, 1 rank, lower(fu.federal_id) federal_id, fu.title, fu.given_name, fu.family_name
 FROM local_contact lc
   INNER JOIN facility_user fu on lc.person_id = fu.person_id
 WHERE fu.federal_id is not NULL AND lc.session_id=hextoraw('%s')
 UNION ALL
-SELECT rawtohex(iu.person_id) person_id, iu.role, iu.on_site, 2 rank
+SELECT rawtohex(iu.person_id) person_id, iu.role, iu.on_site, 2 rank, lower(fu.federal_id) federal_id, fu.title, fu.given_name, fu.family_name
 FROM investigation_user iu
   INNER JOIN facility_user fu on iu.person_id = fu.person_id
 WHERE fu.federal_id is not NULL AND iu.session_id=hextoraw('%s')

@@ -89,11 +89,11 @@ class DummyUASConnector(DBSource):
     return rs
 
   def retrieve_persons_for_session(self, uas_id):
-    rs = []
+    rs = [] # federal_id, title, given_name, family_name
     if uas_id == '99017EB35BD34E55E04017AC41627AFF':
-        rs.append(('E70E7EB35BD34E55E04017AC41627FFB', 'TEAM_LEADER', 1))
-        rs.append(('E70E7EB35BD34E55E04017AC41627FFC', 'TEAM_MEMBER', 1))
-        rs.append(('E70E7EB35BD34E55E04017AC41627FFD', 'TEAM_MEMBER', 1))
+        rs.append(('E70E7EB35BD34E55E04017AC41627FFB', 'TEAM_LEADER', 1, 'gok13476', 'Mr', 'Grok', 'Trok'))
+        rs.append(('E70E7EB35BD34E55E04017AC41627FFC', 'TEAM_MEMBER', 1, 'fra47613', 'Dr', 'Spok', 'Drok'))
+        rs.append(('E70E7EB35BD34E55E04017AC41627FFD', 'TEAM_MEMBER', 1, 'pro46731', 'Dr', 'Mok', 'Krok'))
     return rs
 
   def extract_components(self):
