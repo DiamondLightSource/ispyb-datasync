@@ -1,8 +1,7 @@
-# ispyb-datasync
+# datasync
 
-These scripts are used for synching certain kinds of metadata
-from our user database and LDAP into the ISPyB database. Currently,
-the synched metadata is:
+This package is used for synching certain kinds of metadata from other
+data sources into an ISPyB database. Currently, the synched metadata is:
 * proposals
 * sessions
 * persons
