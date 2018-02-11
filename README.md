@@ -12,6 +12,6 @@ the synched metadata is:
 ### Requirements
 * Python 2.7
 * The mysql.connector Python package
-* The cx_Oracle Python package (for reading the user database)  
+* The cx_Oracle Python package and an Oracle client (for reading the user database)  
 * An ISPyB database on either MariaDB 10.0+ or MySQL 5.6+
 * A Diamond user database
