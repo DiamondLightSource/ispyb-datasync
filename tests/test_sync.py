@@ -5,6 +5,9 @@ def test_sync_proposals(testconfig):
     with datasync.open(conf_file = testconfig, source='dummyuas', target='ispyb') as ds:
         ds.sync_proposals()
 
+    with datasync.open(conf_file = testconfig, source='dummyuas', target='ispyb') as ds:
+        ds.sync_proposals()
+
 def test_sync_proposals_have_persons(testconfig):
     with datasync.open(conf_file = testconfig, source='dummyuas', target='ispyb') as ds:
         ds.sync_proposals_have_persons()
