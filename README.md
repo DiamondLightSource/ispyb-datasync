@@ -1,8 +1,10 @@
-# ispyb-propagation
+[![Build Status](https://travis-ci.org/DiamondLightSource/ispyb-propagation.svg?branch=master)](https://travis-ci.org/DiamondLightSource/ispyb-propagation)
+[![Coverage Status](https://coveralls.io/repos/github/DiamondLightSource/ispyb-propagation/badge.svg?branch=master)](https://coveralls.io/github/DiamondLightSource/ispyb-propagation?branch=master)
 
-These scripts are used for propagating certain kinds of metadata 
-from our user database and LDAP into the ISPyB database. Currently,
-the propagated metadata is:
+# datasync
+
+This package is used for synching certain kinds of metadata from other
+data sources into an ISPyB database. Currently, the synched metadata is:
 * proposals
 * sessions
 * persons
@@ -11,7 +13,7 @@ the propagated metadata is:
 
 ### Requirements
 * Python 2.7
-* The MySQLdb Python package
-* The cx_Oracle Python package (for reading the user database)  
+* The mysql.connector Python package
+* The cx_Oracle Python package and an Oracle client (for reading the user database)  
 * An ISPyB database on either MariaDB 10.0+ or MySQL 5.6+
 * A Diamond user database

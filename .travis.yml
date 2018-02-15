@@ -1,0 +1,24 @@
+sudo: false # use containers
+
+language: python
+python:
+  - "2.7"
+
+addons:
+  mariadb: '10.2'
+
+before_install:
+- mysql -u root -e "CREATE DATABASE ispybtest; SET GLOBAL log_bin_trust_function_creators=ON;"
+- mysql -u root -D ispybtest < conf/schema.sql
+
+before_script:
+- cp conf/config.example.cfg conf/config.cfg
+
+install:
+- pip install .
+- pip install cx_Oracle
+- pip install coveralls
+
+script:
+- coverage run --source=datasync setup.py test
+after_success: coveralls
