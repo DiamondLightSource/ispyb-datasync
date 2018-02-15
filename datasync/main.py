@@ -271,7 +271,7 @@ class DataSync:
             is_remote = 1 if uas_row[3] == 0 else 0 if uas_row[3] == 1 else None
 
             if s_id != None and p_id != None:
-                self.target_conn.insert_session_has_person(ispyb_conn.uas_role_2_ispyb_role(uas_row[2]), s_id, p_id, is_remote)
+                self.target_conn.insert_session_has_person(self.target_conn.uas_role_2_ispyb_role(uas_row[2]), s_id, p_id, is_remote)
             elif s_id is None:
                 logging.getLogger().debug("Not found: BLSession.externalId %s for personId %d" % (uas_row[0], p_id if p_id is not None else -1))
             elif p_id is None:
