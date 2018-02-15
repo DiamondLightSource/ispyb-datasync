@@ -367,7 +367,7 @@ VALUES (
                 given_name = row[5]
                 family_name = row[6]
 
-                ispyb_person_id = self.insert_person(id, login, title, given_name, family_name, insert_shp=False)
+                ispyb_person_id = self.insert_person(id, login, title, given_name, family_name)
 
             self.insert_session_has_person(role, ispyb_session_id, ispyb_person_id, is_remote)
         prev_id = id
