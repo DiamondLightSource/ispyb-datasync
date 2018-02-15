@@ -360,13 +360,12 @@ VALUES (
             role = self.uas_role_2_ispyb_role(uas_role)
             ispyb_person_id = self.retrieve_person_id(id)
             if ispyb_person_id is None:
-                p_row = self.retrieve_uas_person_row(id) # lower(federal_id), title, given_name, family_name
-                login = p_row[0]
+                login = row[3]
                 if login is None:
                     continue
-                title = p_row[1]
-                given_name = p_row[2]
-                family_name = p_row[3]
+                title = row[4]
+                given_name = row[5]
+                family_name = row[6]
 
                 ispyb_person_id = self.insert_person(id, login, title, given_name, family_name, insert_shp=False)
 
