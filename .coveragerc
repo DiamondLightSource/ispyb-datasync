@@ -1,7 +1,6 @@
 [report]
 omit =
     */bin/*
-    */datasync/*
     */conf/*
     */docs/*
     */tests/*
