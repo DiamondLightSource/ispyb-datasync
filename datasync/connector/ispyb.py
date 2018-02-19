@@ -123,16 +123,16 @@ class ISPyBConnector(DBSource, DBTarget):
                 logging.getLogger().debug("%s: id took %f seconds" % (sys.argv[0], (time.time()-start_time)))
         return ret
 
-  def insert_proposal(self, proposal, title, uas_id):
+  def insert_proposal(self, proposal, title, src_id):
     code = str(proposal[0]) + str(proposal[1])
     num = int(proposal[2:])
     query = 'INSERT IGNORE INTO Proposal (proposalCode, proposalNumber, title, externalId, personId, blTimeStamp) VALUES (%s, %s, %s, unhex(%s), 1, NOW())'
-    params = [code, str(num), title, uas_id]
+    params = [code, str(num), title, src_id]
     return self.do_query(query, params, False, True)
 
-  def update_proposal(self, title, uas_id, id):
+  def update_proposal(self, title, src_id, id):
     query = 'UPDATE Proposal SET title=%s, blTimeStamp = NOW(), externalId=unhex(%s) WHERE proposalId=%s'
-    params = [title, uas_id, str(id)]
+    params = [title, src_id, str(id)]
     self.do_query(query, params, False, False)
 
   def update_proposal_code(self, proposal_code, proposal_id):
@@ -157,15 +157,15 @@ class ISPyBConnector(DBSource, DBTarget):
         return int(rs[0][0])
     return None
 
-  def retrieve_proposal_id_for_uas_id(self, uas_id):
+  def retrieve_proposal_id_for_src_id(self, src_id):
     query = 'SELECT max(proposalId) FROM Proposal WHERE externalId=unhex(%s)'
-    params = [uas_id]
+    params = [src_id]
     rs = self.do_query(query, params, return_fetch=True, return_id=False, log_query=False)
     if rs != None and rs[0] != None and rs[0][0] != None:
         return int(rs[0][0])
     return None
 
-  def insert_session(self, uas_id, beamline, comments, start_date, end_date, session_name, beamline_operators, scheduled, persons_rs=None):
+  def insert_session(self, src_id, beamline, comments, start_date, end_date, session_name, beamline_operators, scheduled, persons_rs=None):
     code = str(session_name[0]) + str(session_name[1])
     i = session_name.find('-', 2)
     if i == -1:
@@ -188,7 +188,7 @@ class ISPyBConnector(DBSource, DBTarget):
 
     query = '''INSERT IGNORE INTO BLSession (proposalId, externalId, beamlineName, comments, startDate, endDate, visit_number, beamLineOperator, scheduled)
 VALUES (%s, unhex(%s), %s, %s, %s, %s, %s, %s, %s)'''
-    params = [proposal_id, uas_id, beamline, comments, start_date, end_date, visit_number, beamline_operators, scheduled]
+    params = [proposal_id, src_id, beamline, comments, start_date, end_date, visit_number, beamline_operators, scheduled]
     ispyb_session_id = self.do_query(query, params, False, True)
 
     if ispyb_session_id is None:
@@ -199,10 +199,10 @@ VALUES (%s, unhex(%s), %s, %s, %s, %s, %s, %s, %s)'''
     else:
         logging.getLogger().debug("persons_rs is None!")
 
-  def update_session(self, uas_id, beamline, start_date, end_date, local_contacts, scheduled, id):
+  def update_session(self, src_id, beamline, start_date, end_date, local_contacts, scheduled, id):
     query = '''UPDATE BLSession SET externalId=unhex(%s), beamlinename=%s, startDate=%s, endDate=%s, beamLineOperator=%s, scheduled=%s
     WHERE sessionId=%s'''
-    params = [uas_id, beamline, start_date, end_date, local_contacts, scheduled, str(id)]
+    params = [src_id, beamline, start_date, end_date, local_contacts, scheduled, str(id)]
     self.do_query(query, params, False, False)
 
   def session_has_data(self, id):
@@ -272,17 +272,17 @@ VALUES (%s, %s, %s, %s)'''
     params = [self.uas_role_2_ispyb_role(uas_role), is_remote, ispyb_session_id, ispyb_person_id]
     self.do_query(query, params, False, False)
 
-  def insert_session_type(self, uas_id, tag, session_name):
-    session_id = self.retrieve_session_id(uas_id)
+  def insert_session_type(self, src_id, tag, session_name):
+    session_id = self.retrieve_session_id(src_id)
     if session_id != None:
         query = '''INSERT IGNORE INTO SessionType (sessionId, typeName) VALUES (%s, %s)'''
         params = [session_id, tag]
         ispyb_session_id = self.do_query(query, params, False, False)
 
-  def insert_person(self, uas_id, login, title, given_name, family_name, sessions_rs=None):
+  def insert_person(self, src_id, login, title, given_name, family_name, sessions_rs=None):
     query = '''INSERT IGNORE INTO Person (externalId, login, title, givenName, familyName)
 VALUES (unhex(%s), %s, %s, %s, %s)'''
-    params = [uas_id, login, title, given_name, family_name]
+    params = [src_id, login, title, given_name, family_name]
     ispyb_person_id = self.do_query(query, params, False, True)
 
     if ispyb_person_id is None:
@@ -294,9 +294,9 @@ VALUES (unhex(%s), %s, %s, %s, %s)'''
         else:
             logging.getLogger().debug("uas_sessions_rs is None!")
 
-  def update_person(self, uas_id, login, title, given_name, family_name, id):
+  def update_person(self, src_id, login, title, given_name, family_name, id):
     query = 'UPDATE Person SET externalId=unhex(%s), login=%s, title=%s, givenName=%s, familyName=%s WHERE personId=%s'
-    params = [uas_id, login, title, given_name, family_name, str(id)]
+    params = [src_id, login, title, given_name, family_name, str(id)]
     self.do_query(query, params, False, False)
 
   def retrieve_person_id(self, uas_person_id):
@@ -307,7 +307,7 @@ VALUES (unhex(%s), %s, %s, %s, %s)'''
         return int(rs[0][0])
     return None
 
-  def insert_protein(self, uas_id, proposal_id, name, acronym, origin_txt):
+  def insert_protein(self, src_id, proposal_id, name, acronym, origin_txt):
     query = """INSERT IGNORE INTO Protein (externalId, proposalId, name, acronym, proteinType)
 VALUES (
   unhex(%s),
@@ -316,7 +316,7 @@ VALUES (
   %s,
   %s
 )"""
-    params = [uas_id, proposal_id, name, acronym, origin_txt]
+    params = [src_id, proposal_id, name, acronym, origin_txt]
     return self.do_query(query, params, False, True)
 
   def update_protein(self, name, acronym, id):
@@ -324,9 +324,9 @@ VALUES (
     params = [name, acronym, str(id)]
     self.do_query(query, params, False, False)
 
-  def update_protein_uas_id(self, uas_id, id):
+  def update_protein_src_id(self, src_id, id):
     query = 'UPDATE Protein SET externalId=unhex(%s) WHERE proteinId=%s'
-    params = [uas_id, str(id)]
+    params = [src_id, str(id)]
     self.do_query(query, params, False, False)
 
   def update_protein_name(self, name, id):
@@ -334,17 +334,17 @@ VALUES (
     params = [name, str(id)]
     self.do_query(query, params, False, False)
 
-  def retrieve_number_of_proteins_for_uas_id(self, uas_id):
+  def retrieve_number_of_proteins_for_src_id(self, src_id):
     query = 'SELECT count(*) FROM Protein WHERE externalId=unhex(%s)'
-    params = [uas_id]
+    params = [src_id]
     rs = self.do_query(query, params, return_fetch=True, return_id=False, log_query=False)
     if rs != None and rs[0] != None and rs[0][0] != None:
         return int(rs[0][0])
     return None
 
-  def retrieve_number_of_proteins_for_proposal_and_acronym(self, uas_id, acronym):
+  def retrieve_number_of_proteins_for_proposal_and_acronym(self, src_id, acronym):
     query = 'SELECT count(*) FROM Protein WHERE proposalId in (SELECT proposalId FROM Proposal WHERE externalId=unhex(%s)) AND acronym=%s'
-    params = [uas_id, acronym]
+    params = [src_id, acronym]
     rs = self.do_query(query, params, return_fetch=True, return_id=False, log_query=False)
     if rs != None and rs[0] != None and rs[0][0] != None:
         return int(rs[0][0])
