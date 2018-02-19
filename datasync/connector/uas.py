@@ -133,16 +133,7 @@ class UASConnector(DBSource):
             logging.getLogger().debug("%s: id took %f seconds" % (sys.argv[0], (time.time()-start_time)))
     return ret
 
-  def retrieve_person_row(self, uas_person_id):
-    query = """SELECT lower(federal_id), title, given_name, family_name
-FROM facility_user
-WHERE person_id=hextoraw('%s')""" % uas_person_id
-    rs = do_uas_query(query, [], return_fetch=True, return_id=False, log_query=True)
-    if rs != None and len(rs) > 0 and rs[0] != None:
-        return rs[0]
-    return None
-
-  def retrieve_persons_for_session(self, uas_id):
+  def retrieve_persons_for_session(self, id):
     query = """SELECT person_id, role, on_site, federal_id, title, given_name, family_name
 FROM (
 SELECT rawtohex(lc.person_id) person_id, decode(lc.local_contact_level,0,'LOCAL_CONTACT_1ST',1,'LOCAL_CONTACT_2ND','LOCAL_CONTACT') "role", 1 on_site, 1 rank, lower(fu.federal_id) federal_id, fu.title, fu.given_name, fu.family_name
@@ -155,19 +146,19 @@ FROM investigation_user iu
   INNER JOIN facility_user fu on iu.person_id = fu.person_id
 WHERE fu.federal_id is not NULL AND iu.session_id=hextoraw('%s')
 )
-ORDER BY person_id""" % (uas_id, uas_id)
+ORDER BY person_id""" % (id, id)
     params = []
     rs = do_uas_query(query, params, return_fetch=True, return_id=False, log_query=True)
     if rs != None and len(rs) > 0 and rs[0] != None and rs[0][0] != None:
         return rs
     return None
 
-  def retrieve_sessions_for_person(self, uas_id):
+  def retrieve_sessions_for_person(self, id):
     query = """SELECT rawtohex(iu.session_id), iu.role, iu.on_site
 FROM investigation_user iu
   INNER JOIN shift s ON s.session_id = iu.session_id
 WHERE iu.person_id=hextoraw('%s') AND s.state <> 'Cancelled'
-ORDER BY iu.session_id""" % uas_id
+ORDER BY iu.session_id""" % id
     params = []
     rs = do_uas_query(query, params, return_fetch=True, return_id=False, log_query=True)
     if rs != None and len(rs) > 0 and rs[0] != None and rs[0][0] != None:
