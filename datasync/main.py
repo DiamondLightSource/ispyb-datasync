@@ -135,7 +135,7 @@ class DataSync:
         for ispyb_row in ispyb_rs:
             if (uas_row[0] == ispyb_row[0]) or (uas_row[1] == ispyb_row[1]): # UAS GUID, ISPyB externalId
                 if uas_row[6] == 'Cancelled':
-                    self.target_conn.delete_session(ispyb_row[6]) # TO BE IMPLEMENTED
+                    self.target_conn.delete_session(ispyb_row[6])
                 # NOTE: deliberately not comparing comments, as they may have changed in ISPyB and we don't want to overwrite
                 elif uas_row[0] != ispyb_row[0] or uas_row[1] != ispyb_row[1] or uas_row[2] != ispyb_row[2] or uas_row[4] != ispyb_row[4] or uas_row[5] != ispyb_row[5] or uas_row[7] != ispyb_row[7] or ispyb_row[8] != scheduled:
                     self.target_conn.update_session(uas_row[0], uas_row[2], uas_row[4], uas_row[5], uas_row[7], scheduled, ispyb_row[6])
@@ -188,7 +188,7 @@ class DataSync:
             if uas_row[0] == ispyb_row[0]:
                 # IF UAS state no longer valid:
                 if uas_row[4] != 'Accepted':
-                    self.target_conn.update_protein_uas_id(None, ispyb_row[4])
+                    self.target_conn.update_protein_src_id(None, ispyb_row[4])
                 if uas_row[2] != "" and uas_row[2] is not None and \
                     (ispyb_row[2] is None or ispyb_row[2] == ''):
                     self.target_conn.update_protein_name(uas_row[2], ispyb_row[4])
@@ -198,8 +198,8 @@ class DataSync:
                 # IF state is 'Accepted'
                 if uas_row[4] == 'Accepted':
                     # IF the protein's UAS ID doesn't already exist in ISPyB:
-                    if 0 == target_conn.retrieve_number_of_proteins_for_uas_id(uas_row[0]):
-                        self.target_conn.update_protein_uas_id(uas_row[0], ispyb_row[4])
+                    if 0 == target_conn.retrieve_number_of_proteins_for_src_id(uas_row[0]):
+                        self.target_conn.update_protein_src_id(uas_row[0], ispyb_row[4])
                         # IF ISPyB name is empty
                         if ispyb_row[2] is None or ispyb_row[2] == '':
                             self.target_conn.update_protein_name(uas_row[2], ispyb_row[4])
@@ -209,7 +209,7 @@ class DataSync:
                 # At this point we know the protein's UAS ID doesn't exist in ISPyB,
                 # but we still need to make sure the acronym doesn't already exist in the proposal
                 if 0 == self.target_conn.retrieve_number_of_proteins_for_proposal_and_acronym(uas_row[1], uas_row[3]):
-                    ispyb_proposal_id = self.target_conn.retrieve_proposal_id_for_uas_id(uas_row[1])
+                    ispyb_proposal_id = self.target_conn.retrieve_proposal_id_for_src_id(uas_row[1])
                     if ispyb_proposal_id != None:
                         self.target_conn.insert_protein(uas_row[0], ispyb_proposal_id, uas_row[2], uas_row[3], 'ORIGIN:UAS')
 
@@ -234,7 +234,7 @@ class DataSync:
                     self.target_conn.update_proposal_has_person(uas_row[2], ispyb_row[3], ispyb_row[4])
                 break
         else:
-            pr_id = self.target_conn.retrieve_proposal_id_for_uas_id(uas_row[0])
+            pr_id = self.target_conn.retrieve_proposal_id_for_src_id(uas_row[0])
             pe_id = self.target_conn.retrieve_person_id(uas_row[1])
 
             if pr_id != None and pe_id != None:
