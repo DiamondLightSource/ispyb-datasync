@@ -7,9 +7,13 @@ This package is used for synching certain kinds of metadata from other
 data sources into an ISPyB database. Currently, the synched metadata is:
 * proposals
 * sessions
+* session types
 * persons
 * session - person associations
+* proposal - person associations
 * staff user permissions based on LDAP groups  
+
+See the [```Wiki```](https://github.com/DiamondLightSource/ispyb-propagation/wiki) for details.
 
 ### Requirements
 * Python 2.7
